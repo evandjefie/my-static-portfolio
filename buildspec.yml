@@ -1,0 +1,18 @@
+version: 0.2
+phases:
+ install:
+   runtime-versions:
+     nodejs: 10
+   commands:
+     - echo "install step"
+#     - npm install
+ pre_build:
+   commands:
+     - echo "pre_build step"
+ build:
+   commands:
+     - echo "Build step"
+#     - aws s3 sync --delete . "s3://<your-static-website-bucket>"
+ post_build:
+   commands:
+     - echo "post_build step"
