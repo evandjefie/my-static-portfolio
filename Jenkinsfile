@@ -3,7 +3,7 @@ pipeline {
   stages{
     stage('clone') {
       steps {
-        checkout scm
+        sh 'git clone -b features https://github.com/evandjefie/my-static-portfolio.git app'
       }
     }	
     stage('deploy') {
