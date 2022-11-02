@@ -1,9 +1,9 @@
 pipeline {
 	agent any
 	stages{
-    stage('clone'){
-      checkout scm
-    }
+                stage('clone'){
+                       checkout scm
+                }
 		stage('deploy') {
 			steps {
 				withCredentials([[
