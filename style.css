@@ -1,5 +1,6 @@
 *{
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    text-decoration: none;
 }
 
 .container{
@@ -14,6 +15,22 @@ nav{
     width: auto;
     align-items: center;
     justify-content: space-around;
+}
+
+nav>a{
+    color: #000;
+    display: flex;
+    flex-direction: row;
+    width: auto;
+    align-items: center;
+    justify-content: space-around;
+}
+
+nav>a>.fa-solid
+{
+    font-size: 25px;
+    margin-right: 5%;
+    
 }
 .logo{
     border-radius: 15%;
