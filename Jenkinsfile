@@ -1,21 +1,31 @@
 pipeline {
   agent any
-  stages{
-    stage('clone') {
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '5'))
+  }
+  environment {
+    DOCKERHUB_CREDENTIALS = credentials('evandjefie-dockerhub')
+  }
+  stages {
+    stage('Build') {
       steps {
-        sh 'git clone -b features https://github.com/evandjefie/my-static-portfolio.git app'
+        sh 'docker build -t evandjefie/my-static-portfolio:1.0.0 .'
       }
-    }	
-    stage('deploy') {
+    }
+    stage('Login') {
       steps {
-        withCredentials([[
-          $class: 'AmazonWebServicesCredentialsBinding',
-          credentialsId: 'aws-jenkins-test',
-          accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-          secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-            sh 'aws s3 sync app/ s3://evd-00-my-static-portfolio'
-          } 
+        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
       }
+    }
+    stage('Push') {
+      steps {
+        sh 'docker push evandjefie/my-static-portfolio:1.0.0'
+      }
+    }
+  }
+  post {
+    always {
+      sh 'docker logout'
     }
   }
 }
