@@ -9,7 +9,7 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh 'docker build -t evandjefie/my-static-portfolio:1.0.0 .'
+        sh 'docker build -t evandjefie/my-static-portfolio:1.0.1 .'
       }
     }
     stage('Login') {
