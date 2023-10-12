@@ -4,28 +4,36 @@ pipeline {
     buildDiscarder(logRotator(numToKeepStr: '5'))
   }
   environment {
-    DOCKERHUB_CREDENTIALS = credentials('evandjefie-dockerhub')
+    KUBECONFIG = credentials('minikubeconfig')
   }
   stages {
-    stage('Build') {
+    stage('clone') {
       steps {
-        sh 'docker build -t evandjefie/my-static-portfolio:1.0.1 .'
+        sh 'git clone https://github.com/evandjefie/my-static-portfolio.git app'
+      }
+    }    
+    stage('Test kubectl') {
+      steps {
+        sh 'kubectl version --client'
       }
     }
-    stage('Login') {
+    stage('Deploy App') {
       steps {
-        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-      }
-    }
-    stage('Push') {
-      steps {
-        sh 'docker push evandjefie/my-static-portfolio:1.0.0'
+        sh '''
+          cd app      
+          kubectl apply -f k8s/static-app-dpl.yaml
+          kubectl apply -f k8s/static-app-svc.yaml
+        '''
       }
     }
   }
-  post {
-    always {
-      sh 'docker logout'
-    }
-  }
+  // post {
+  //   always {
+  //       sh '''
+  //         cd app
+  //         kubectl delete -f k8s/static-app-dpl.yaml
+  //         kubectl delete -f k8s/static-app-svc.yaml
+  //       '''
+  //       }
+  // }
 }
