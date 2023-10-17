@@ -4,14 +4,29 @@ pipeline {
     buildDiscarder(logRotator(numToKeepStr: '5'))
   }
   environment {
+    ORGANIZATION_NAME = 'evandjefie'
     DOCKERHUB_CREDENTIALS = credentials('evandjefie-dockerhub')
+    DOCKERHUB_CREDENTIALS_USR = 'evandjefie'
+    APP_NAME = 'my-static-portfolio'
+    APP_VERSION = 1.0.1
+    SITE_URL = 'http://localhost:8083'
   }
   stages {
-    stage('Build') {
+    stage('Build and Tag') {
       steps {
-        sh 'docker build -t evandjefie/my-static-portfolio:1.0.1 .'
+        sh 'docker build -t ${ORGANIZATION_NAME}/${APP_NAME}:${APP_VERSION} .'
       }
     }
+    stage('Run') {
+      steps {
+        sh 'docker run -d -p 8083:80 ${ORGANIZATION_NAME}/${APP_NAME}:${APP_VERSION}'
+      }
+    }
+    stage('Test') {
+      steps {
+        sh 'timeout 1m curl -sSf $SITE_URL && echo "App is running successfully!" || echo "App is not running!"'
+      }
+    }    
     stage('Login') {
       steps {
         sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
@@ -19,13 +34,13 @@ pipeline {
     }
     stage('Push') {
       steps {
-        sh 'docker push evandjefie/my-static-portfolio:1.0.0'
+        sh 'docker push ${ORGANIZATION_NAME}/${APP_NAME}:${APP_VERSION}'
       }
     }
   }
   post {
-    always {
-      sh 'docker logout'
+    always {        
+      sh 'docker logout'      
     }
   }
 }

@@ -4,6 +4,7 @@ pipeline {
     buildDiscarder(logRotator(numToKeepStr: '5'))
   }
   environment {
+    DOCKERHUB_CREDENTIALS = credentials('evandjefie-dockerhub')
     KUBECONFIG = credentials('minikubeconfig')
   }
   stages {
